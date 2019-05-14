@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"strings"
 	"sync"
 	"syscall"
 
@@ -194,7 +195,7 @@ func (b *BeaconNode) registerP2P(ctx *cli.Context) error {
 	return b.services.RegisterService(beaconp2p)
 }
 
-func (b *BeaconNode) registerBlockchainService(_ *cli.Context) error {
+func (b *BeaconNode) registerBlockchainService(cli *cli.Context) error {
 	var web3Service *powchain.Web3Service
 	if err := b.services.FetchService(&web3Service); err != nil {
 		return err
@@ -212,12 +213,19 @@ func (b *BeaconNode) registerBlockchainService(_ *cli.Context) error {
 		return err
 	}
 
+	loggingEnabled := cli.IsSet(cmd.LoggingFile.Name)
+	loggingFields := cli.String(cmd.LoggingFields.Name)
+	loggingFile := cli.String(cmd.LoggingFile.Name)
+
 	blockchainService, err := blockchain.NewChainService(context.Background(), &blockchain.Config{
 		BeaconDB:       b.db,
 		Web3Service:    web3Service,
 		OpsPoolService: opsService,
 		AttsService:    attsService,
 		P2p:            p2pService,
+		LoggingEnabled: loggingEnabled,
+		LoggingFields:  strings.Split(loggingFields, ","),
+		LoggingOutput:  loggingFile,
 	})
 	if err != nil {
 		return fmt.Errorf("could not register blockchain service: %v", err)

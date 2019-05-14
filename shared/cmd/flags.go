@@ -105,4 +105,16 @@ var (
 		Usage: "Specify log formatting. Supports: text, json, fluentd.",
 		Value: "text",
 	}
+	// LoggingFields specifies which fields of a block to log. Fields are comma-separated.
+	LoggingFields = cli.StringFlag{
+		Name:  "loggingFields",
+		Usage: "Specifies which fields of a block to log. Fields are comma-separated. Supports the field block_root.",
+		Value: "text",
+	}
+	// LoggingFile specifies where to log block events
+	LoggingFile = cli.StringFlag{
+		Name:  "LoggingFile",
+		Usage: "Specifies the path of the file to log block events to as JSON objects, one per line.",
+		Value: "text",
+	}
 )

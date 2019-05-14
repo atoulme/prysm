@@ -10,6 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prysmaticlabs/prysm/shared/logging"
+
 	"github.com/prysmaticlabs/prysm/beacon-chain/attestation"
 	b "github.com/prysmaticlabs/prysm/beacon-chain/core/blocks"
 	"github.com/prysmaticlabs/prysm/beacon-chain/db"
@@ -49,6 +51,7 @@ type ChainService struct {
 	canonicalBlocks      map[uint64][]byte
 	canonicalBlocksLock  sync.RWMutex
 	receiveBlockLock     sync.Mutex
+	logger               logging.BlockLogger
 }
 
 // Config options for the service.
@@ -60,6 +63,9 @@ type Config struct {
 	OpsPoolService operations.OperationFeeds
 	DevMode        bool
 	P2p            p2p.Broadcaster
+	LoggingEnabled bool
+	LoggingOutput  string
+	LoggingFields  []string
 }
 
 // NewChainService instantiates a new service instance that will
@@ -78,6 +84,7 @@ func NewChainService(ctx context.Context, cfg *Config) (*ChainService, error) {
 		stateInitializedFeed: new(event.Feed),
 		p2p:                  cfg.P2p,
 		canonicalBlocks:      make(map[uint64][]byte),
+		logger:               logging.BlockLogger{Enabled: cfg.LoggingEnabled, Fields: cfg.LoggingFields, Output: cfg.LoggingOutput},
 	}, nil
 }
 
