@@ -78,10 +78,7 @@ type ServerConfig struct {
 
 // NewServer creates a new p2p server instance.
 func NewServer(cfg *ServerConfig) (*Server, error) {
-	opts, err := buildOptions(cfg)
-	if err != nil {
-		return nil, err
-	}
+	opts := buildOptions(cfg)
 	if cfg.RelayNodeAddr != "" {
 		opts = append(opts, libp2p.AddrsFactory(withRelayAddrs(cfg.RelayNodeAddr)))
 	} else if cfg.HostAddress != "" {
